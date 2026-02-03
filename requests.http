@@ -1,0 +1,22 @@
+@hostname = localhost
+@port = 5000
+@base_url = http://{{hostname}}:{{port}}
+@debts_path = /api/v1/debts
+
+### Get all debts
+GET {{base_url}}{{debts_path}}/
+
+### POST a debt
+POST {{base_url}}{{debts_path}}/
+Content-Type: application/json
+
+{
+    "debtor_name": "user",
+    "debtor_dni": "33333333P",
+    "debt_amount": 450,
+    "currency": "EUR",
+    "debt_since": "2026-01-28T23:37:36"
+}
+
+### Get debts by DNI
+GET {{base_url}}{{debts_path}}/dni/33333333P

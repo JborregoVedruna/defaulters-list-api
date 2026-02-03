@@ -1,0 +1,57 @@
+services:
+  api:
+    build: .
+    container_name: defaulters-list-api
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/
+      - MONGO_DB_NAME=caixabank_debts
+      - PORT=5000
+    depends_on:
+      - mongodb
+    networks:
+      - defaulters-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - defaulters-network
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+    depends_on:
+      - mongodb
+    networks:
+      - defaulters-network
+
+  kics-scan:
+    image: checkmarx/kics:latest
+    container_name: kics-scan
+    volumes:
+      - .:/path
+    # This will run a scan and output an HTML report in the project root
+    command: scan -p /path -o /path --report-formats html --output-name kics-report
+    networks:
+      - defaulters-network
+
+networks:
+  defaulters-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
